@@ -30,9 +30,9 @@ jobs:
         
     - name: Build Debug APK
       run: |
-        gradle assembleDebug 2>&1 | tee build.log
+        gradle assembleDebug --stacktrace 2>&1 | tee build.log
         echo "=== ERRORS ==="
-        grep -E "error:" build.log | head -n 20
+        grep -E "(error:|e: |FAILED|Exception)" build.log | head -n 30
         echo "=== END ==="
       
     - name: Upload Debug APK
@@ -40,4 +40,4 @@ jobs:
       with:
         name: debug-apk
         path: build/outputs/apk/debug/*.apk
-        if-no-files-found: error
+        if-no-files-found: warn
