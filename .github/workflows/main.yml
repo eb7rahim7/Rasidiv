@@ -39,8 +39,13 @@ jobs:
         EOF
         chmod +x gradlew
       
-    - name: Build Debug APK
-      run: ./gradlew assembleDebug --stacktrace
+        - name: Build Debug APK
+          run: |
+        ./gradlew assembleDebug 2>&1 | tee build.log
+        echo "=== ERRORS ==="
+        grep -E "error:" build.log | head -n 20
+        echo "=== END ==="
+      
       
     - name: Upload Debug APK
       uses: actions/upload-artifact@v4
