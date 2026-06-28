@@ -23,29 +23,17 @@ jobs:
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
       
-    - name: Download Gradle Wrapper JAR
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v3
+      with:
+        gradle-version: '8.5'
+        
+    - name: Build Debug APK
       run: |
-        mkdir -p gradle/wrapper
-        curl -L -o gradle/wrapper/gradle-wrapper.jar \
-          https://raw.githubusercontent.com/gradle/gradle/v8.5.0/gradle/wrapper/gradle-wrapper.jar
-      
-    - name: Create gradlew script
-      run: |
-        cat > gradlew << 'EOF'
-        #!/bin/sh
-        APP_HOME=$( cd "${APP_HOME:-./}" && pwd -P ) || exit
-        CLASSPATH=$APP_HOME/gradle/wrapper/gradle-wrapper.jar
-        exec java -classpath "$CLASSPATH" org.gradle.wrapper.GradleWrapperMain "$@"
-        EOF
-        chmod +x gradlew
-      
-        - name: Build Debug APK
-          run: |
-        ./gradlew assembleDebug 2>&1 | tee build.log
+        gradle assembleDebug 2>&1 | tee build.log
         echo "=== ERRORS ==="
         grep -E "error:" build.log | head -n 20
         echo "=== END ==="
-      
       
     - name: Upload Debug APK
       uses: actions/upload-artifact@v4
