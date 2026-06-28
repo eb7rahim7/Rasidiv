@@ -1,0 +1,180 @@
+أنشئ مشروع Android Native احترافي وكامل بالمواصفات التالية:
+
+## معلومات المشروع
+- اسم التطبيق: إدارة حسابات المحل
+- Package name: com.afm.shopaccounts
+- اللغة: Kotlin
+- الواجهة: Jetpack Compose مع Material Design 3
+- قاعدة البيانات: Room Database
+- Architecture: MVVM
+- Dependency Injection: Hilt
+- الواجهة عربية بالكامل (RTL)
+- خط التطبيق: Cairo (Google Fonts) كخط أساسي
+
+## اتجاه التصميم (من التصميم رقم 3 المختار)
+- ألوان أساسية: خلفية بيضاء/فاتحة، بنفسجي كلون رئيسي، مرجاني/برتقالي كلون ثانوي
+- بطاقات ملونة بتدرجات لونية
+- تصميم حيوي ومرح مع مؤشرات اتجاه
+- زوايا مستديرة للبطاقات
+- أيقونات ملونة
+- دعم الوضع الليلي
+
+## المطلوب في هذه المرحلة - الأساس الكامل:
+
+### 1. هيكل المشروع
+- إعداد Gradle مع كل التبعيات (Hilt, Room, Navigation, Compose, PDF, Excel)
+- إعداد Hilt Application class
+- إعداد Navigation graph لكل الشاشات
+- إعداد Theme مع الألوان المختارة وخط Cairo
+- إعداد الوضع الليلي (Dark Theme)
+
+### 2. قاعدة البيانات الكاملة (Room)
+أنشئ كل الـ Entities والـ DAOs والـ Relations:
+
+**Entities:**
+- Supplier (id, name, taxNumber, address, phone)
+- Product (id, name, barcode, purchasePrice, salePrice, currentQty, minQty, unit)
+- Customer (id, name, phone, notes, creditLimit)
+- Employee (id, name, salary, allowance, profession, notes)
+
+- PurchaseInvoice (id, supplierId, invoiceNumber, date, totalAmount, taxIncluded, taxAmount)
+- PurchaseInvoiceItem (id, invoiceId, productId, productName, qty, price, total)
+
+- SaleInvoice (id, customerId, invoiceNumber, date, totalAmount, discount, taxIncluded, taxAmount, paymentMethod[CASH/CARD/MIXED], cashAmount, cardAmount, cashierId, isCredit)
+- SaleInvoiceItem (id, invoiceId, productId, productName, qty, price, total, profit)
+
+- SupplierPayment (id, supplierId, amount, date, notes)
+- CustomerPayment (id, customerId, amount, date, notes)
+
+- Expense (id, categoryId, amount, date, description, notes)
+- ExpenseCategory (id, name)
+
+- EmployeeTransaction (id, employeeId, type[DEDUCTION/ALLOWANCE/SALARY], amount, date, notes)
+
+- CashRegister (id, type[CASH_IN/CASH_OUT/CARD_IN/CARD_OUT], amount, date, reference, referenceId, notes)
+
+- StoreInfo (id, storeName, logo, address, phone, taxNumber)
+- AppUser (id, name, role[ADMIN/CASHIER], pinCode)
+
+**DAOs** لكل entity مع:
+- CRUD operations
+- كشف حساب queries
+- تقارير مجمعة
+- فلترة حسب التاريخ
+
+**Database** مع TypeConverters وميجريشن
+
+### 3. Repository Layer
+- Repository لكل entity
+- Business logic للعمليات المعقدة:
+  - عند البيع: خصم المخزون + تسجيل حركة الصندوق + احتساب الربح
+  - عند الشراء: زيادة المخزون + تسجيل دين المورد
+  - عند السداد: تسجيل حركة الصندوق + تحديث رصيد المورد/العميل
+  - أرقام الفواتير التسلسلية (تصفير مع بداية كل سنة)
+
+### 4. ViewModels
+- ViewModel لكل شاشة
+- StateFlow للحالات
+- مع الvalidation المناسب
+
+### 5. كل الشاشات (Jetpack Compose):
+
+**أ. شاشة تسجيل الدخول** - جميلة وعصرية مع شعار التطبيق
+
+**ب. لوحة التحكم الرئيسية Dashboard:**
+- كرت باسم الشركة وشعارها مع "أهلاً وسهلاً بك"
+- إجمالي السيولة (نقد + شبكة)
+- قيمة المخزون
+- ديون الموردين
+- إجمالي المبيعات
+- إجمالي المشتريات
+- إجمالي المصروفات
+- إجمالي الأرباح
+- صافي الوضع المالي
+- شريط تنقل سفلي (الرئيسية، المبيعات، المخزون، التقارير، الإعدادات)
+
+**ج. الموردون:**
+- قائمة الموردين
+- إضافة/تعديل مورد
+- كشف حساب المورد
+- تسجيل مشتريات (فاتورة شراء)
+- تسجيل سداد
+
+**د. الأصناف والمخزون:**
+- قائمة الأصناف مع بحث
+- إضافة/تعديل صنف
+- تنبيه انخفاض المخزون
+- حركة المخزون
+
+**هـ. المبيعات:**
+- إنشاء فاتورة بيع (نقد/آجل)
+- إدخال صنف يدوي أو من القائمة
+- خيارات الدفع (كاش/شبكة/مختلط)
+- خانة الخصم
+- بضريبة أو بدون
+- تحديد الكاشير
+- قائمة الفواتير
+- معاينة الفاتورة مع أزرار (طباعة/تعديل/حذف)
+- باركود التحقق من الفاتورة
+
+**و. العملاء:**
+- قائمة العملاء
+- إضافة/تعديل عميل
+- كشف حساب العميل
+- تسجيل تحصيل (سداد جزئي/كامل)
+
+**ز. الموظفون:**
+- قائمة الموظفين
+- إضافة/تعديل موظف
+- تسجيل خصم/بدل
+- مسير رواتب (الراتب + الإضافات - الخصومات = الصافي)
+
+**ح. الصندوق والخزينة:**
+- رصيد النقد
+- رصيد الشبكة
+- سجل حركات الأموال
+- فلترة حسب التاريخ
+
+**ط. المصاريف:**
+- تسجيل مصروف
+- سجل المصروفات
+- معاينة/تعديل/حذف سند المصروف
+- تصنيفات المصروفات
+- فرز حسب مدة زمنية
+- تقارير شهرية
+
+**ي. التقارير:**
+- تقرير العملاء المدينين
+- العملاء المتأخرون
+- إجمالي الذمم المدينة
+- مبيعات اليوم/الشهر/السنة
+- الأرباح والخسائر
+- حركة المخزون
+- تقرير الموردين
+- تقرير العملاء
+- تقرير المصروفات
+- تقرير الموظفين وحركاتهم
+- مبيعات حسب الفترة
+- تصدير PDF و Excel
+
+**ك. الإعدادات (كروت مطوية):**
+- كرت معلومات المتجر
+- كرت رمز الدخول
+- كرت الكاشيرات والمستخدمين
+- كرت "حول النظام" (التطبيق عبارة عن تطبيق حسابات مصغر... المطور: AFM، للتواصل: afmfad@hotmail.com)
+- زر الخروج
+
+**ل. النسخ الاحتياطي:**
+- إنشاء نسخة احتياطية JSON
+- استعادة النسخ
+- تصدير PDF/Excel
+- استيراد البيانات
+
+### 6. ملاحظات مهمة:
+- كل الأرقام والتواريخ بصيغة عربية
+- RTL كامل
+- دعم الجوالات والأجهزة اللوحية
+- خط Cairo من Google Fonts
+- التصميم حسب اتجاه التصميم رقم 3 (بنفسجي/مرجاني/حيوي)
+- Material Design 3 مع Dynamic Colors
+- أنشئ المشروع الكامل مع كل الملفات جاهزة للتشغيل
