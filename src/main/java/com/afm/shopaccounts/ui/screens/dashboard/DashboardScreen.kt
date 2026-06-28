@@ -90,50 +90,41 @@ fun DashboardScreen(
             }
         }
     ) { padding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+
+LazyColumn(
+    modifier = Modifier
+        .fillMaxSize()
+        .padding(padding)
+        .padding(16.dp),
+    verticalArrangement = Arrangement.spacedBy(16.dp)
+) {
+    item {
+        GradientCard(
+            modifier = Modifier.fillMaxWidth(),
+            gradientColors = listOf(GradientPurpleStart, GradientCoralEnd)
         ) {
-            item {
-                GradientCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    gradientColors = listOf(GradientPurpleStart, GradientCoralEnd)
-                ) {
-                    Text(
-                        text = state.storeInfo?.storeName ?: "متجرك",
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = androidx.compose.ui.graphics.Color.White
-                    )
-                    Text(
-                        text = "أهلاً وسهلاً بك",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.9f)
-                    )
-                }
-            }
-            item {
-                SectionTitle("ملخص الأداء")
-            }
-            item {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
-                    contentPadding = PaddingValues(0.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    items(metrics) { metric ->
-                        DashboardCard(
-                            title = metric.title,
-                            value = metric.value,
-                            icon = metric.icon,
-                            gradientColors = metric.colors
-                        )
-                    }
-                }
+            Text(text = state.storeInfo?.storeName ?: "متجرك", style = MaterialTheme.typography.headlineSmall, color = Color.White)
+            Text(text = "أهلاً وسهلاً بك", style = MaterialTheme.typography.titleMedium, color = Color.White.copy(alpha = 0.9f))
+        }
+    }
+    
+    item { SectionTitle("ملخص الأداء") }
+
+    // بدلاً من الـ Grid، سنستخدم عرضاً بسيطاً أو مصفوفة
+    // بما أنك تريد Grid، الأفضل هو عمل صفوف (Rows) داخل الـ Column
+    items(metrics.chunked(2)) { rowMetrics ->
+        androidx.compose.foundation.layout.Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            for (metric in rowMetrics) {
+                DashboardCard(
+                    modifier = Modifier.weight(1f),
+                    title = metric.title,
+                    value = metric.value,
+                    icon = metric.icon,
+                    gradientColors = metric.colors
+                )
             }
         }
     }
