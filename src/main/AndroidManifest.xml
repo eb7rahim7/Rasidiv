@@ -10,6 +10,7 @@
     <application
         android:name=".ShopAccountsApp"
         android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
         android:label="Rasidiv"
         android:supportsRtl="true"
         android:theme="@android:style/Theme.Material.Light.NoActionBar"
