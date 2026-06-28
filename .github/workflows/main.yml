@@ -30,14 +30,27 @@ jobs:
         
     - name: Build Debug APK
       run: |
-        gradle assembleDebug --stacktrace 2>&1 | tee build.log
-        echo "=== ERRORS ==="
-        grep -E "(error:|e: |FAILED|Exception)" build.log | head -n 30
-        echo "=== END ==="
-      
-    - name: Upload Debug APK
+        gradle assembleDebug --stacktrace
+        find . -name "*.apk" -type f
+        
+    - name: Upload APK to Artifacts
       uses: actions/upload-artifact@v4
       with:
         name: debug-apk
-        path: build/outputs/apk/debug/*.apk
+        path: |
+          build/outputs/apk/debug/*.apk
+          app/build/outputs/apk/debug/*.apk
         if-no-files-found: warn
+        
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      if: github.ref == 'refs/heads/main'
+      with:
+        files: |
+          build/outputs/apk/debug/*.apk
+          app/build/outputs/apk/debug/*.apk
+        tag_name: v${{ github.run_number }}
+        name: "Rasidiv v${{ github.run_number }}"
+        body: "Debug build generated automatically"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
